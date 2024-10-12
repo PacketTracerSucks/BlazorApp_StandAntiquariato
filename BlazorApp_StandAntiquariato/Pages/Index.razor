@@ -1,0 +1,78 @@
+﻿@page "/"
+
+<h3>Elenco Stand</h3>
+<hr />
+
+<button class="btn btn-secondary" @onclick="mostraStand_Click">Aggiorna Lista</button>
+
+@if(mostraTabella)
+{
+    <table class="table table-responsive table-hover">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Nome</th>
+                <th scope="col">Cognome</th>
+                <th scope="col">Zona dello stand</th>
+                <th scope="col">Superficie dello stand</th>
+                <th scope="col">Copertura dello stand</th>
+                <th scope="col">Data di inizio</th>
+                <th scope="col">Elenco Oggetti per Stand</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(Stand item in listaStand)
+            {
+                <tr>
+                    <th>@item.IdStand</th>
+                    <td>@item.NomeAntiquario</td>
+                    <td>@item.CognomeAntiquario</td>
+                    <td>@item.Zona</td>
+                    <td>@item.Superficie m^2</td>
+                    <td>@(item.IsCoperto ? "Al coperto" : "All'aperto")</td>
+                    <td>@item.DataInizio.ToString("yyyy/MM/dd")</td>
+                    <td><a href="OggettiStand/@item.IdStand">visualizza gli oggetti</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code{
+    bool mostraTabella = false;
+    List<Stand> listaStand = new List<Stand>();
+
+    private void mostraStand_Click()
+    {
+        listaStand.Clear();
+        SqliteConnection connessione = new SqliteConnection("Data Source=Data/StandAntiquariato.db;");
+        SqliteCommand comando = new SqliteCommand("SELECT * FROM tblStand;", connessione);
+        SqliteDataReader dataReader;
+
+        connessione.Open();
+        dataReader = comando.ExecuteReader();
+        while(dataReader.Read())
+        {
+            Stand x = new Stand
+            {
+                IdStand = Convert.ToInt32(dataReader["idStand"]),
+                NomeAntiquario = Convert.ToString(dataReader["nomeAntiquario"]),
+                    CognomeAntiquario = Convert.ToString(dataReader["cognomeAntiquario"]),
+                Zona = Convert.ToChar(dataReader["zona"]),
+                Superficie = Convert.ToInt32(dataReader["superficie"]),
+                IsCoperto = Convert.ToBoolean(dataReader["isCoperto"]),
+                DataInizio = Convert.ToDateTime(dataReader["dataInizio"])
+            };
+            listaStand.Add(x);
+        }
+        connessione.Close();
+        mostraTabella = true;
+    }
+
+     protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        mostraStand_Click();
+    }
+
+}

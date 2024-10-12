@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\Images\iphone-11.jpg" />
+    <None Include="wwwroot\Images\lampada-xvii.jpg" />
+    <None Include="wwwroot\Images\mobile-xvii.jpg" />
+    <None Include="wwwroot\Images\monitor.jpg" />
+    <None Include="wwwroot\Images\mouse.jpg" />
+    <None Include="wwwroot\Images\ps4.jpg" />
+    <None Include="wwwroot\Images\ps5.jpg" />
+    <None Include="wwwroot\Images\tastiera.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.8" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,74 @@
+﻿@page "/ElencoOggetti"
+
+<h3>Elenco Oggetti</h3>
+<hr />
+
+<button class="btn btn-secondary" @onclick="mostraOggetti_Click">Aggiorna Lista</button>
+
+@if (mostraTabella)
+{
+    <table class="table table-responsive table-hover">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Materiale Principale</th>
+                <th scope="col">Epoca</th>
+                <th scope="col">Prezzo</th>
+                <th scope="col">Stand di Appartenenza</th>
+                <th scope="col">Dettaglio Oggetto</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(Oggetto item in listaOggetti)
+            {
+                <tr>
+                    <th>@item.IdOggetto</th>
+                    <td>@item.Tipo</td>
+                    <td>@(item.MaterialePrincipale == "" ? "sconosciuto" : item.MaterialePrincipale)</td>
+                    <td>secolo @(item.Epoca == "" ? "sconosciuto" : item.Epoca)</td>
+                    <td>€ @item.PrezzoEsposto</td>
+                    <td>@item.StandId</td>
+                    <td><a href="DettaglioOggetto/@item.IdOggetto">mostra dettaglio oggetto</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    bool mostraTabella = false;
+    List<Oggetto> listaOggetti = new List<Oggetto>();
+
+    private void mostraOggetti_Click()
+    {
+        listaOggetti.Clear();
+        SqliteConnection connessione = new SqliteConnection("Data Source=Data/StandAntiquariato.db;");
+        SqliteCommand comando = new SqliteCommand("SELECT * FROM tblOggetti;", connessione);
+        SqliteDataReader dataReader;
+
+        connessione.Open();
+        dataReader = comando.ExecuteReader();
+        while (dataReader.Read())
+        {
+            Oggetto x = new Oggetto
+                {
+                    IdOggetto = Convert.ToInt32(dataReader["idOggetto"]),
+                    Tipo = Convert.ToString(dataReader["tipo"]),
+                    MaterialePrincipale = Convert.ToString(dataReader["materialePrincipale"]),
+                    Epoca = Convert.ToString(dataReader["epoca"]),
+                    PrezzoEsposto = Convert.ToDecimal(dataReader["prezzoEsposto"]),
+                    StandId = Convert.ToInt32(dataReader["StandId"]),
+                };
+            listaOggetti.Add(x);
+        }
+        connessione.Close();
+        mostraTabella = true;
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        mostraOggetti_Click();
+    }
+}

@@ -1,0 +1,59 @@
+﻿@page "/DettaglioOggetto/{IdOggetto:int}"
+
+<h3>Dettaglio Oggetto (@IdOggetto)</h3>
+<hr />
+
+@if(mostraCard)
+{
+    <div class="card" style="width: 18rem;">
+        <img src="Images/@x.PercorsoImmagine" class="card-img-top">
+        <div class="card-body">
+            <h5 class="card-title">@($"#{x.IdOggetto} {x.Tipo}")</h5>
+            <hr/>
+            <ul>
+                <li><b>Materiale principale:</b> @x.MaterialePrincipale</li>
+                <li><b>Epoca:</b> @x.Epoca secolo</li>
+                <li><b>Prezzo:</b> € @x.PrezzoEsposto</li>
+                <li><b>Stand di appartenenza:</b> @x.StandId</li>
+            </ul>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int IdOggetto { get; set; } = 0;
+    bool mostraCard = false;
+    Oggetto? x;
+
+    private void mostraCard_Click()
+    {
+        SqliteConnection connessione = new SqliteConnection("Data Source=Data/StandAntiquariato.db;");
+        SqliteCommand comando = new SqliteCommand($"SELECT * FROM tblOggetti WHERE idOggetto = {IdOggetto};", connessione);
+        SqliteDataReader dataReader;
+
+        connessione.Open();
+        dataReader = comando.ExecuteReader();
+
+        dataReader.Read();
+        x = new Oggetto
+            {
+                IdOggetto = Convert.ToInt32(dataReader["idOggetto"]),
+                Tipo = Convert.ToString(dataReader["tipo"]),
+                MaterialePrincipale = Convert.ToString(dataReader["materialePrincipale"]),
+                Epoca = Convert.ToString(dataReader["epoca"]),
+                PrezzoEsposto = Convert.ToDecimal(dataReader["prezzoEsposto"]),
+                StandId = Convert.ToInt32(dataReader["StandId"]),
+                PercorsoImmagine = Convert.ToString(dataReader["percorsoImmagine"])
+            };
+        
+        connessione.Close();
+        mostraCard = true;
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        mostraCard_Click();
+    }
+}
